@@ -38,8 +38,16 @@ else
 fi
 
 echo "== Chromium + RustDesk (Flatpak) =="
+sudo apt install -y flatpak
 sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-sudo flatpak install -y flathub org.chromium.Chromium com.rustdesk.RustDesk
+# Using --noninteractive to prevent the script from hanging for user input
+sudo flatpak install -y flathub org.chromium.Chromium
+RD_VERSION=$(curl -s https://api.github.com/repos/rustdesk/rustdesk/releases/latest | grep -Po '"tag_name": "\K.*?(?=")')
+RD_URL="https://github.com/rustdesk/rustdesk/releases/download/${RD_VERSION}/rustdesk-${RD_VERSION}-aarch64.deb"
+
+wget "$RD_URL" -O rustdesk_arm64.deb
+sudo apt install -y ./rustdesk_arm64.deb
+rm rustdesk_arm64.deb
 
 echo "== Verify =="
 deepstream-app --version-all || true
